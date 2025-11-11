@@ -1,0 +1,79 @@
+name: Build & Deploy Frontend to S3 + CloudFront
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Show repo layout (debug)
+        run: |
+          echo "---- repo root ----"
+          ls -la
+          echo "---- public/ ----"
+          ls -la public || true
+
+      - name: Install & Build frontend (if npm project present)
+        run: |
+          if [ -d public ]; then
+            cd public
+            if [ -f package.json ]; then
+              echo "package.json found in public/ — installing and building"
+              npm ci
+              npm run build
+            else
+              echo "No package.json in public/ — assuming public/ already contains static files"
+            fi
+          else
+            echo "public/ folder not found — adjust workflow if your frontend is elsewhere"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync built files to S3
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          echo "Syncing files to s3://$S3_BUCKET"
+          # Remove --acl public-read because ACLs are disabled
+          if [ -d public/build ]; then
+            aws s3 sync public/build s3://$S3_BUCKET --delete
+          elif [ -d public/dist ]; then
+            aws s3 sync public/dist s3://$S3_BUCKET --delete
+          else
+            aws s3 sync public s3://$S3_BUCKET --delete
+          fi
+
+      - name: Create CloudFront invalidation (optional)
+        if: secrets.CLOUDFRONT_DISTRIBUTION_ID != ''
+        env:
+          CLOUDFRONT_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          echo "Invalidating CloudFront distribution $CLOUDFRONT_ID"
+          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+
+      - name: Done
+        run: echo "Frontend deploy to S3 (and optional CloudFront invalidation) finished."
