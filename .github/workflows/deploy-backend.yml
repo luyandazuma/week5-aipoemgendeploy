@@ -15,7 +15,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ${{ secrets.AWS_REGION }} 
+      AWS_REGION: ${{ secrets.AWS_REGION }}
 
     steps:
       - name: Checkout repository
@@ -66,7 +66,9 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name "${{ secrets.EB_APP_NAME }}" \
             --version-label "v-${{ github.run_number }}" \
-            --source-bundle S3Bucket="elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCESS_KEY_ID }}",S3Key="backend-deploy.zip" || echo "Version may already exist"
+            --region ${{ env.AWS_REGION }} \
+            --source-bundle S3Bucket="elasticbeanstalk-${{ env.AWS_REGION }}-${{ secrets.AWS_ACCESS_KEY_ID }}",S3Key="backend-deploy.zip"
           aws elasticbeanstalk update-environment \
             --environment-name "${{ secrets.EB_ENV_NAME }}" \
-            --version-label "v-${{ github.run_number }}"
+            --version-label "v-${{ github.run_number }}" \
+            --region ${{ env.AWS_REGION }}
