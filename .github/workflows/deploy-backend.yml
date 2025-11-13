@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ${{ env.AWS_REGION }}
+      AWS_REGION: 'us-west-1'
 
     steps:
       - name: Checkout repository
@@ -44,6 +44,7 @@ jobs:
           cd server
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
           echo "PORT=8080" >> .env
+          echo "AWS_REGION=${{ env.AWS_REGION }}" > .env
 
       - name: Zip the backend app
         run: |
