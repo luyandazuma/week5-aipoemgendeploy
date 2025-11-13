@@ -80,4 +80,3 @@ azureml-logs/
 htmlcov/
 .env/server.env
 .env/process.env
-.env/AWS_REGION
