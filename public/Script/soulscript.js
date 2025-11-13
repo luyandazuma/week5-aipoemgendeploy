@@ -1,3 +1,17 @@
+const API_URL = 'http://musemind-ai-poems.us-east-1.elasticbeanstalk.com'
+
+// fetch call should use API_URL for backend:
+fetch(`${API_URL}/api/generate-poem`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    userInput: userInput,
+    theme: 'soulscript'
+  })
+})
+
 const API_BASE_URL = "https://musemind.onrender.com/api";
 
 let soulScriptFormElement = document.querySelector("#form-group");
