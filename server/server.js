@@ -174,12 +174,13 @@ app.use((req, res) => {
 // Start server
 const port = process.env.PORT || PORT;
 app.listen(port, () => {
+  console.log(`Listening on ${port}`);
   console.log('╔═══════════════════════════════════════╗');
   console.log('║     MuseMind Backend Server          ║');
   console.log('║        (Powered by Gemini AI)        ║');
   console.log('╚═══════════════════════════════════════╝');
-  console.log(`✅ Server running on http://localhost:${port}`);
-  console.log(`✅ Health check: http://localhost:${port}/api/health`);
-  console.log(`✅ API endpoint: POST http://localhost:${port}/api/generate-poem`);
-  console.log('\n📝 Press Ctrl+C to stop the server\n');
+  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Health check: http://localhost:${port}/api/health`);
+  console.log(`API endpoint: POST http://localhost:${port}/api/generate-poem`);
+  console.log('\nPress Ctrl+C to stop the server\n');
 });
