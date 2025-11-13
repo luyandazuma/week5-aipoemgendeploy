@@ -10,6 +10,7 @@ permissions:
 
 env:
   NODE_VERSION: '18'
+  AWS_REGION: 'us-west-1'
 
 jobs:
   deploy:
