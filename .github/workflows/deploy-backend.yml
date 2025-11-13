@@ -10,7 +10,7 @@ permissions:
 
 env:
   NODE_VERSION: '18'
-    AWS_REGION: af-south-1
+  AWS_REGION: 'af-south-1'
 
 jobs:
   deploy:
