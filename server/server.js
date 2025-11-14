@@ -1,7 +1,18 @@
 // server/server.js
 require('dotenv').config(); // load .env locally (ignored by git)
 const express = require('express');
+
 const cors = require('cors');
+app.use(cors({
+  origin: [
+    'https://d372dy4e8mv5.cloudfront.net',  // Add your CloudFront URL
+    'http://localhost:8080'  // For local development
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS', 'OPTIONS', 'PUT', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const axios = require('axios');
 
 const app = express();
